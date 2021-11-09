@@ -1,4 +1,4 @@
-[PCHeaders]
+[WebHeaders]
 Accept = "application/json, text/plain, */*"
 UserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36"
 AcceptLanguage = "zh-CN,zh;q=0.9"
@@ -7,14 +7,14 @@ Cookie = ""
 
 
 [AppHeaders]
+Accept = "text/html,application/xhtml+xml,*/*;q=0.8"
 UserAgent = "Mozilla/5.0 BiliDroid/5.58.0 (bbcallen@gmail.com)"
+AcceptLanguage = "zh-CN"
 AcceptEncoding = "gzip"
 Buvid = "XZ11bfe2654a9a42d885520a680b3574582eb3"
 DisplayId = "146771405-1521008435"
 DeviceGuid = "2d0bbec5-df49-43c5-8a27-ceba3f74ffd7"
 DeviceId = "469a6aaf431b46f8b58a1d4a91d0d95b202004211125026456adffe85ddcb44818"
-AcceptLanguage = "zh-CN"
-Accept = "text/html,application/xhtml+xml,*/*;q=0.8"
 Connection = "keep-alive"
 Cookie = ""
 

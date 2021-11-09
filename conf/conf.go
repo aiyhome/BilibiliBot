@@ -17,14 +17,14 @@ var (
 
 // Config .
 type Config struct {
-	PCHeaders  *pc_headers
+	WebHeaders *web_headers
 	AppHeaders *app_headers
 	AppParams  *app_params
 	TvHeaders  *tv_headers
 	TvParams   *tv_params
 }
 
-type pc_headers struct {
+type web_headers struct {
 	Accept         string
 	UserAgent      string
 	AcceptLanguage string
