@@ -1,0 +1,48 @@
+[PCHeaders]
+Accept = "application/json, text/plain, */*"
+UserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36"
+AcceptLanguage = "zh-CN,zh;q=0.9"
+AcceptEncoding = "gzip, deflate"
+Cookie = ""
+
+
+[AppHeaders]
+UserAgent = "Mozilla/5.0 BiliDroid/5.58.0 (bbcallen@gmail.com)"
+AcceptEncoding = "gzip"
+Buvid = "XZ11bfe2654a9a42d885520a680b3574582eb3"
+DisplayId = "146771405-1521008435"
+DeviceGuid = "2d0bbec5-df49-43c5-8a27-ceba3f74ffd7"
+DeviceId = "469a6aaf431b46f8b58a1d4a91d0d95b202004211125026456adffe85ddcb44818"
+AcceptLanguage = "zh-CN"
+Accept = "text/html,application/xhtml+xml,*/*;q=0.8"
+Connection = "keep-alive"
+Cookie = ""
+
+
+[AppParams]
+Actionkey = "appkey"
+Appkey = "bca7e84c2d947ac6"
+Build = "6070600"
+Device = "android"
+MobiApp = "android"
+Platform = "android"
+AppSecret = "60698ba2f68e01ce44738920a0ffe768"
+
+
+[TvHeaders]
+Accept = "application/json, text/plain, */*"
+UserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36"
+AcceptLanguage = "zh-CN,zh;q=0.9"
+AcceptEncoding = "gzip, deflate"
+Cookie = ""
+
+
+[TvParams]
+Actionkey = "appkey"
+Appkey = '4409e2ce8ffd12b8'
+Build = '101800'
+Device = 'android_tv_yst'
+MobiApp = 'android_tv_yst'
+Platform = 'android_tv_yst'
+AppSecret = '59b43e04ad6965f34319062b478f83dd'
+
