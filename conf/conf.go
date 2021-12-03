@@ -1,33 +1,83 @@
 package conf
 
 import (
+	"BilibiliBot/util/log"
 	"flag"
+	"fmt"
 	"github.com/BurntSushi/toml"
-	"log"
+	"path/filepath"
+	"strings"
 )
 
-var (
-	confFilepath  string
-	usersFilepath string
+type Object interface{}
 
-	Common = &CommonConf{}
-	Users  = &UsersConf{}
+type ConfigFileData struct {
+	Path  string
+	Obj   Object
+	Cmd   string
+	Usage string
+}
+
+var (
+	Common    = &CommonConf{}
+	Platforms = &PlatformsConf{}
+	Users     = &UsersConf{}
+	ConfLst   = []ConfigFileData{
+		{
+			Path:  "./toml/config.toml",
+			Obj:   Common,
+			Cmd:   "c",
+			Usage: "common config file path",
+		},
+		{
+			Path:  "./toml/platforms.toml",
+			Obj:   Platforms,
+			Cmd:   "p",
+			Usage: "platforms config file path",
+		},
+		{
+			Path:  "./toml/users.toml",
+			Obj:   Users,
+			Cmd:   "u",
+			Usage: "users config file path",
+		},
+	}
+
+	TestConf = &CommonConf{}
 )
 
 func init() {
-	flag.StringVar(&confFilepath, "conf", "./conf/toml/conf.toml", "-conf path")
-	flag.StringVar(&usersFilepath, "users", "./conf/toml/users.toml", "-users path")
+	for _, v := range ConfLst {
+		flag.StringVar(&v.Path, v.Cmd, v.Path, v.Usage)
+	}
 }
 
-// Init init conf
 func Load() (err error) {
-	_, err = toml.DecodeFile(confFilepath, &Common)
-	if err != nil {
-		log.Fatal(err)
+	for _, v := range ConfLst {
+		_, err = toml.DecodeFile(v.Path, v.Obj)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
 	}
-	_, err = toml.DecodeFile(usersFilepath, &Users)
-	if err != nil {
-		log.Fatal(err)
+	return nil
+}
+
+func Reload(name string) (err error) {
+	name = filepath.ToSlash(name)
+	fmt.Printf("%+v\n", name)
+	for _, v := range ConfLst {
+		if find := strings.Contains(v.Path, name); find {
+			_, err = toml.DecodeFile(v.Path, v.Obj)
+			if err != nil {
+				log.Fatal(err)
+				return err
+			}
+		}
 	}
-	return
+	return nil
+}
+
+func Listen(evtName string, callback func(string)) {
+
 }

@@ -1,28 +1,11 @@
 package main
 
 import (
-	conf "BilibiliBot/conf"
-	// spider "BilibiliBot/spider"
-
-	log "BilibiliBot/util/log"
-	"fmt"
-	_ "github.com/dchest/captcha"
-	_ "github.com/hashicorp/go-plugin"
-	_ "io"
-	_ "os"
-	// "time"
+	"BilibiliBot/center/app"
 )
 
-func init() {
-	log.I("==================== 初始化 ====================")
-}
-
 func main() {
-	log.I("=============== 启动 spider 测试 ===============")
+	log.Info("==================== 初始化 ====================")
 
-	conf.Load()
-
-	// spider.SeleniumTest()
-	fmt.Printf("%+v\n", conf.Common)
-	log.I("=================== 运行结束 ===================")
+	log.Info("=================== 运行结束 ===================")
 }

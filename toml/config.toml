@@ -1,0 +1,5 @@
+[Log] 
+ConsoleOnly = false
+Directory =  "logs"
+FilePattern = "logs/app.log.%Y-%m-%d"
+FileLink = "logs/app.log"
