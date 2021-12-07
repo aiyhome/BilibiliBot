@@ -30,8 +30,8 @@ func Init(directory string, filePattern string, fileLink string, consoleOnly boo
 	encoderConfig.TimeKey = "time"
 	encoder := zapcore.NewConsoleEncoder(encoderConfig)
 
-	var writer zapcore.WriteSyncer
 	var logLevel zapcore.Level
+	var logCore zapcore.Core
 	if !consoleOnly {
 		// 获取当前工作目录
 		pwd, err := os.Getwd()
@@ -58,14 +58,17 @@ func Init(directory string, filePattern string, fileLink string, consoleOnly boo
 		}
 
 		logLevel = zapcore.InfoLevel
-		writer = zapcore.AddSync(routateWriter)
 
+		logCore = zapcore.NewTee(
+			zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), logLevel),
+			zapcore.NewCore(encoder, zapcore.AddSync(routateWriter), logLevel),
+		)
 	} else {
 		logLevel = zapcore.DebugLevel
-		writer = zapcore.AddSync(os.Stdout)
+
+		logCore = zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), logLevel)
 	}
 
-	logCore := zapcore.NewCore(encoder, writer, logLevel)
 	// logger := zap.New(logCore, zap.AddCaller())
 	logger := zap.New(logCore)
 	DefaultLogger = logger.Sugar()

@@ -1,7 +1,7 @@
 package event
 
 import (
-	"reflect"
+	_ "fmt"
 	"sync"
 )
 
@@ -16,18 +16,18 @@ func NewDispatcher() *Dispatcher {
 	return dp
 }
 
-func (self *Dispatcher) Attach(name string, listener *Listener) {
+func (self *Dispatcher) Attach(name string, listener Listener) {
 	self.Lock()
-	self.events[name] = append(self.events[name], *listener)
+	self.events[name] = append(self.events[name], listener)
 	self.Unlock()
 }
 
-func (self *Dispatcher) Detach(name string, listener *Listener) {
+func (self *Dispatcher) Detach(name string, listener Listener) {
 	self.Lock()
 	var pos int
 	if listeners, exist := self.events[name]; exist {
 		for _, l := range listeners {
-			if reflect.DeepEqual(l, listener) {
+			if l.Equal(listener) {
 				self.events[name] = append(listeners[:pos], listeners[pos+1:]...)
 				if pos > 0 {
 					pos = pos - 1

@@ -51,18 +51,18 @@ func Emit(name string, data ...interface{}) {
 	}
 }
 
-func Attach(name string, listener *Listener) {
+func Attach(name string, listener Listener) {
 	dispatcher.Attach(name, listener)
 }
 
-func Detach(name string, listener *Listener) {
+func Detach(name string, listener Listener) {
 	dispatcher.Detach(name, listener)
 }
 
-func On(name string, listener *Listener) {
+func On(name string, listener Listener) {
 	Attach(name, listener)
 }
 
-func Off(name string, listener *Listener) {
+func Off(name string, listener Listener) {
 	Detach(name, listener)
 }

@@ -11,7 +11,7 @@ func main() {
 	app.Run()
 	listener := event.NewListener(func(evt *event.Event, data ...interface{}) {
 		log.Info("ok", evt)
-		log.Info(data)
+		log.Fatal(data)
 	})
 	app.Attach("test", listener)
 	app.Emit("test")
