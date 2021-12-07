@@ -42,7 +42,7 @@ func Init(directory string, filePattern string, fileLink string, consoleOnly boo
 
 		// 创建日志目录
 		if !checkPathExist(directory) {
-			fmt.Printf("log dir %s does not exist, create\n", directory)
+			fmt.Printf("[Notice]log dir %s does not exist, create\n", directory)
 			os.Mkdir(directory, os.ModePerm)
 		}
 

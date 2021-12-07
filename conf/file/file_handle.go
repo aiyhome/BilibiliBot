@@ -1,130 +1,138 @@
 package file
 
 import (
-    "io/ioutil"
-    "log"
-    "path/filepath"
+	"BilibiliBot/util/log"
+	"io/ioutil"
+	"path/filepath"
 
-    "github.com/fsnotify/fsnotify"
+	"github.com/fsnotify/fsnotify"
 )
 
+const logTag = "[file_handle]"
+
 var (
-    // ConfigTypeJSON ...
-    ConfigTypeJSON ConfigType = "json"
-    // ConfigTypeToml ...
-    ConfigTypeToml ConfigType = "toml"
-    // ConfigTypeYaml ...
-    ConfigTypeYaml ConfigType = "yaml"
+	// ConfigTypeJSON ...
+	ConfigTypeJSON ConfigType = "json"
+	// ConfigTypeToml ...
+	ConfigTypeToml ConfigType = "toml"
+	// ConfigTypeYaml ...
+	ConfigTypeYaml ConfigType = "yaml"
 )
 
 type FileHandle struct {
-    path        string
-    enableWatch bool
-    changed     chan struct{}
+	path        string
+	enableWatch bool
+	changed     chan struct{}
 }
 
 func init() {
 }
 
 func extParser(cfgPath string) ConfigType {
-    ext := filepath.Ext(cfgPath)
-    switch ext {
-    case ".json":
-        return ConfigTypeJSON
-    case ".toml":
-        return ConfigTypeToml
-    case ".yaml":
-        return ConfigTypeYaml
-    default:
-        log.Panic("data source: invalid configuration type")
-    }
-    return ""
+	ext := filepath.Ext(cfgPath)
+	switch ext {
+	case ".json":
+		return ConfigTypeJSON
+	case ".toml":
+		return ConfigTypeToml
+	case ".yaml":
+		return ConfigTypeYaml
+	default:
+		log.Panic("data source: invalid configuration type")
+	}
+	return ""
 }
 
-func (fp *FileHandle) Parse(path string, watch bool) ConfigType {
-    absolutePath, err := filepath.Abs(path)
-    if err != nil {
-        log.Panic("new datasource", elog.FieldErr(err))
-    }
-    fp.path = absolutePath
-    fp.enableWatch = watch
+func (self *FileHandle) Parse(path string, watch bool) ConfigType {
+	absolutePath, err := filepath.Abs(path)
+	if err != nil {
+		log.Panic("new datasource", err)
+	}
+	self.path = absolutePath
+	self.enableWatch = watch
 
-    if watch {
-        fp.changed = make(chan struct{}, 1)
-        go fp.watch()
-    }
+	if watch {
+		self.changed = make(chan struct{}, 1)
+		log.Info("go self.watch()", absolutePath)
+		go self.watch()
+	}
 
-    return extParser(path)
+	return extParser(path)
 }
 
-func (fp *FileHandle) ReadConfig() (content []byte, err error) {
-    return ioutil.ReadFile(fp.path)
+func (self *FileHandle) ReadConfig() (content []byte, err error) {
+	return ioutil.ReadFile(self.path)
 }
 
-func (fp *FileHandle) Close() error {
-    close(fp.changed)
-    return nil
+func (self *FileHandle) Close() error {
+	close(self.changed)
+	return nil
 }
 
-func (fp *FileHandle) IsConfigChanged() <-chan struct{} {
-    return fp.changed
+func (self *FileHandle) IsConfigChanged() <-chan struct{} {
+	return self.changed
 }
 
 // Watch file and automate update.
-func (fp *FileHandle) watch() {
-    w, err := fsnotify.NewWatcher()
-    if err != nil {
-        log.Fatal("new file watcher", err)
-    }
-    defer w.Close()
+func (self *FileHandle) watch() {
+	w, err := fsnotify.NewWatcher()
+	log.Info("go watch 0")
 
-    configFile := filepath.Clean(fp.path)
-    realConfigFile, _ := filepath.EvalSymlinks(fp.path)
+	if err != nil {
+		log.Fatal("new file watcher", err)
+	}
+	log.Info("go watch 1")
+	defer w.Close()
 
-    log.Info("read watch",
-        "configFile", configFile,
-        "realConfigFile", realConfigFile,
-        "fppath", fp.path,
-    )
+	configFile := filepath.Clean(self.path)
+	log.Info("go watch 2")
 
-    done := make(chan bool)
-    go func() {
-        for {
-            select {
-            case event := <-w.Events:
-                currentConfigFile, _ := filepath.EvalSymlinks(fp.path)
+	realConfigFile, _ := filepath.EvalSymlinks(self.path)
 
-                log.Info("read watch event",
-                    "event", filepath.Clean(event.Name),
-                    "path", filepath.Clean(fp.path),
-                    "currentConfigFile", currentConfigFile,
-                    "realConfigFile", realConfigFile,
-                )
-                // we only care about the config file with the following cases:
-                // 1 - if the config file was modified or created
-                // 2 - if the real path to the config file changed (eg: k8s ConfigMap replacement)
-                const writeOrCreateMask = fsnotify.Write | fsnotify.Create
-                if (filepath.Clean(event.Name) == configFile &&
-                    event.Op&writeOrCreateMask != 0) ||
-                    (currentConfigFile != "" && currentConfigFile != realConfigFile) {
+	log.Info("read watch",
+		"configFile", configFile,
+		"realConfigFile", realConfigFile,
+		"fppath", self.path,
+	)
 
-                    realConfigFile = currentConfigFile
-                    log.Info("modified file", event.Name, realConfigFile)
+	done := make(chan bool)
+	go func() {
+		for {
+			select {
+			case event := <-w.Events:
+				currentConfigFile, _ := filepath.EvalSymlinks(self.path)
 
-                    select {
-                    case fp.changed <- struct{}{}:
-                    default:
+				log.Info("read watch event",
+					"event", filepath.Clean(event.Name),
+					"path", filepath.Clean(self.path),
+					"currentConfigFile", currentConfigFile,
+					"realConfigFile", realConfigFile,
+				)
+				// we only care about the config file with the following cases:
+				// 1 - if the config file was modified or created
+				// 2 - if the real path to the config file changed (eg: k8s ConfigMap replacement)
+				const writeOrCreateMask = fsnotify.Write | fsnotify.Create
+				if (filepath.Clean(event.Name) == configFile &&
+					event.Op&writeOrCreateMask != 0) ||
+					(currentConfigFile != "" && currentConfigFile != realConfigFile) {
 
-                    }
-                }
-            case err := <-w.Errors:
-                log.Error("read watch error", err)
-            }
-        }
-    }()
-    err = w.Add(fp.path)
-    if err != nil {
-        log.Fatal(err)
-    }
-    <-done
+					realConfigFile = currentConfigFile
+					log.Info("modified file", event.Name, realConfigFile)
+
+					select {
+					case self.changed <- struct{}{}:
+					default:
+
+					}
+				}
+			case err := <-w.Errors:
+				log.Error("read watch error", err)
+			}
+		}
+	}()
+	err = w.Add(self.path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	<-done
 }

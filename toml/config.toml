@@ -3,3 +3,4 @@ ConsoleOnly = false
 Directory =  "logs"
 FilePattern = "logs/app.log.%Y-%m-%d"
 FileLink = "logs/app.log"
+Test = 1

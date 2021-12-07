@@ -11,7 +11,7 @@ import (
 var writeMutex sync.Mutex
 
 func ReadFileAsString(path string) (string, error) {
-	logFile := ""
+	content := ""
 	fi, err := os.Open(path)
 	if err != nil {
 		return "", err
@@ -31,10 +31,10 @@ func ReadFileAsString(path string) (string, error) {
 			break
 		} else {
 			// 将读取到的数据交给 callback 处理
-			logFile += string(buf[:n])
+			content += string(buf[:n])
 		}
 	}
-	return logFile, nil
+	return content, nil
 }
 
 func WriteStringToFile(path string, stringData string, append bool) error {
